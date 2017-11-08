@@ -1,0 +1,36 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="iron-accordion-pages">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]!</h2>
+  </template>
+
+  <script>
+    /**
+     * `iron-accordion-pages`
+     * Multi pages presentation element
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class IronAccordionPages extends Polymer.Element {
+      static get is() { return 'iron-accordion-pages'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'iron-accordion-pages'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(IronAccordionPages.is, IronAccordionPages);
+  </script>
+</dom-module>
