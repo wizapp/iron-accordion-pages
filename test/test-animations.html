@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+  <link rel="import" href="../bower_components/polymer/polymer-element.html">
+  <link rel="import" href="../bower_components/paper-button/paper-button.html">
+  <link rel="import" href="../iron-accordion-pages.html">
+
+  <title>Test animations</title>
+
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+
+</head>
+
+<body>
+  <test-app>
+  </test-app>
+  <dom-module id="test-app">
+    <template>
+      <style>
+        :host {
+          display: block;
+        }
+
+        .container {
+          position: absolute;
+          left: 20px;
+          top: 150px;
+          right: 20px;
+          height: 600px;
+
+          background-color: lightblue;
+        }
+
+        .element {
+          position: absolute;
+          left: 0px;
+          top: 0px;
+          width: 50px;
+          height: 50px;
+          background-color: yellow;
+        }
+
+        .slot1 {
+          position: absolute;
+
+
+          background-color: lightseagreen;
+        }
+
+        .slot1-box {
+          left: 600px;
+          top: 200px;
+
+          width: 100px;
+          height: 200px;
+        }
+
+        .slot2 {
+          position: absolute;
+
+          background-color: lightpink;
+        }
+
+        .slot2-box {
+          left: 0px;
+          top: 0px;
+
+          width: 300px;
+          height: 100px;
+        }
+
+        .animate {
+          -webkit-transition: 1.4s ease-out;
+          -moz-transition: 1.4s ease-out;
+          -ms-transition: 1.4s ease-out;
+          -o-transition: 1.4s ease-out;
+          transition: 1.4s ease-out;
+        }
+
+        paper-button {
+          background-color: lightgray;
+        }
+      </style>
+      <h1>Test animations</h1>
+      <br>
+
+      <paper-button on-tap="_handleMoveToSlot1Button">Move to Slot 1</paper-button>
+      <paper-button on-tap="_handleMoveToSlot2Button">Move to Slot 2</paper-button>
+      <paper-button on-tap="_handleGetElementInfoButton">Element Info</paper-button>
+      <div class="container">
+        <div id="slot1" class="slot1 slot1-box"></div>
+        <div id="slot2" class="slot2 slot2-box"></div>
+        <div id="element1" class="element animate"></div>
+      </div>
+    </template>
+
+    <script>
+      /**
+       * @customElement
+       * @polymer
+       */
+      class TestApp extends Polymer.Element {
+        static get is() { return 'test-app'; }
+        static get properties() {
+          return {
+          };
+        }
+        _handleMoveToSlot1Button() {
+          console.log('_handleMoveToSlot1Button');
+          const element = this.$.element1;
+          // this.animateElement(element, 300, 300, 200, 200);
+          this.animateElementToElement(element, this.$.slot1);
+          // element.classList.remove('slot2-box');
+          // element.classList.add('slot1-box');
+          // element.style.left = '300px';
+        }
+        _handleMoveToSlot2Button() {
+          console.log('_handleMoveToSlot2Button');
+          const element = this.$.element1;
+          this.animateElementToElement(element, this.$.slot2);
+          // element.classList.remove('slot1-box');
+          // element.classList.add('slot2-box');
+        }
+        _handleGetElementInfoButton() {
+          console.log('_handleGetElementInfoButton');
+          const element = this.$.element1;
+          const currentX = element.offsetLeft;
+          const currentY = element.offsetTop;
+          const currentWidth = element.offsetWidth;
+          const currentHeight = element.offsetHeight;
+          console.log(`Element: (${currentX}, ${currentY}) - (${currentWidth} x ${currentHeight})`);
+        }
+        animateElement(element, x, y, width, height) {
+          element.style.left = `${x}px`;
+          element.style.top = `${y}px`;
+          element.style.width = `${width}px`;
+          element.style.height = `${height}px`;
+          // const currentX = element.offsetLeft;
+          // const currentY = element.offsetTop;
+          // const currentWidth = element.offsetWidth;
+          // const currentHeight = element.offsetHeight;
+          // const currentScaleX = width / currentWidth;
+          // const currentScaleY = height / currentHeight;
+          //  scale(${currentScaleX}, ${currentScaleY})
+          // const animation = element.animate([
+          //   { transform: `translate3d(${currentX}px, ${currentY}px, 0)` },
+          //   { transform: `translate3d(${x}px, ${y}px, 0)` },
+          // ], {
+          //     fill: 'forwards',
+          //     easing: 'ease-in-out',
+          //     duration: 10000.0,
+          //   })
+          // animation.onfinish = cb;
+        }
+        animateElementToElement(element, targetElement) {
+          const targetStyle = window.getComputedStyle(targetElement);
+          element.style.left = targetStyle.left;
+          element.style.top = targetStyle.top;
+          element.style.width = targetStyle.width;
+          element.style.height = targetStyle.height;
+          // const currentX = element.offsetLeft;
+          // const currentY = element.offsetTop;
+          // const currentWidth = element.offsetWidth;
+          // const currentHeight = element.offsetHeight;
+          // const animation = element.animate([
+          //   { transform: `translate3d(${currentX}px, 0, 0)` },
+          //   { transform: `translate3d(${x}px, 0, 0)` },
+          // ], {
+          //     fill: 'forwards',
+          //     easing: 'ease-in-out',
+          //     duration: 2000.0,
+          //   })
+          // animation.onfinish = cb;
+        }
+      }
+
+      window.customElements.define(TestApp.is, TestApp);
+    </script>
+  </dom-module>
+
+</body>
+
+</html>

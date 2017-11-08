@@ -1,33 +1,137 @@
-<link rel="import" href="../polymer/polymer-element.html">
+<!-- <link rel="import" href="../polymer/polymer-element.html"> -->
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="bower_components/iron-selector/iron-selectable.html">
 
 <dom-module id="iron-accordion-pages">
   <template>
     <style>
       :host {
         display: block;
+        --iron-accordion-pages-transition: 1.4s ease-out;
+      }
+
+      .container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      .container ::slotted([slot=items]) {
+        position: absolute;
+
+        height: 100%;
+
+        -webkit-transition: var(--iron-accordion-pages-transition);
+        -moz-transition: var(--iron-accordion-pages-transition);
+        -ms-transition: var(--iron-accordion-pages-transition);
+        -o-transition: var(--iron-accordion-pages-transition);
+        transition: var(--iron-accordion-pages-transition);
       }
     </style>
-    <h2>Hello [[prop1]]!</h2>
+    <div class="container">
+      <slot name="items"></slot>
+    </div>
+
   </template>
 
   <script>
     /**
      * `iron-accordion-pages`
-     * Multi pages presentation element
-     *
-     * @customElement
-     * @polymer
-     * @demo demo/index.html
+     * Multi animated pages presentation element in an 'accordion' aspect
      */
-    class IronAccordionPages extends Polymer.Element {
+    class IronAccordionPages extends Polymer.mixinBehaviors([Polymer.IronResizableBehavior, Polymer.IronSelectableBehavior], Polymer.Element) {
       static get is() { return 'iron-accordion-pages'; }
       static get properties() {
         return {
-          prop1: {
-            type: String,
-            value: 'iron-accordion-pages'
-          }
+          previousSecondOffset: {
+            type: Number,
+            value: 100,
+          },
+          previousFirstOffset: {
+            type: Number,
+            value: 300,
+          },
+          nextFirstOffset: {
+            type: Number,
+            value: 300,
+          },
+          nextSecondOffset: {
+            type: Number,
+            value: 100,
+          },
+          selectedOffset: {
+            type: Number,
+            value: 400,
+          },
         };
+      }
+      static get observers() {
+        return [
+          '_handleItemsChanged(items)',
+          '_handleSelectedChanged(selected)',
+          '_handleLayoutPropertiesChange(previousSecondOffset,previousFirstOffset,nextFirstOffset,nextSecondOffset,selectedOffset)'
+        ];
+      }
+      _handleSelectedChanged(selected) {
+        this.layoutItems(true);
+      }
+      _handleItemsChanged(items) {
+        if (!this.selected) {
+          if (items.length > 0) {
+            this.selectIndex(0);
+            this.layoutItems(false);
+          }
+          return;
+        }
+        this.layoutItems(false);
+      }
+      _handleLayoutPropertiesChange(previousSecondOffset, previousFirstOffset, nextFirstOffset, nextSecondOffset, selectedOffset) {
+        this.layoutItems(false);
+      }
+      layoutItems(animated) {
+        let selectedItem = this.selected;
+        if (!selectedItem) {
+          return;
+        }
+
+        let selectedItemIndex = this._valueToIndex(selectedItem);
+        const items = this.items;
+        for (var i = 0, item; item = this.items[i]; i++) {
+          if (!animated) {
+            item.style.transition = 'none';
+          }
+
+          const itemLeft = this._getItemLeft(i, selectedItemIndex);
+          this._animateElementSetStyle(item, itemLeft);
+
+          if (!animated) {
+            item.style.transition = '';
+          }
+        }
+      }
+      _animateElementSetStyle(element, toLeft) {
+        const transform = `translate3d(${toLeft}px, 0, 0)`;
+        element.style.transform = transform;
+        element.style.webkitTransform = transform;
+        element.style.MozTransform = transform;
+        element.style.msTransform = transform;
+        element.style.OTransform = transform;
+      }
+      _getItemLeft(itemIndex, selectedItemIndex, itemsCount) {
+        return this.selectedOffset + this._getItemLeftOffset(itemIndex, selectedItemIndex);
+      }
+      _getItemLeftOffset(itemIndex, selectedItemIndex) {
+        let selectedIndexDiff = itemIndex - selectedItemIndex;
+        if (selectedIndexDiff === 0) {
+          return 0;
+        }
+        if (selectedIndexDiff < 0) {
+          selectedIndexDiff = -selectedIndexDiff;
+          const offset = this.previousFirstOffset + (selectedIndexDiff - 1) * this.previousSecondOffset;
+          return -offset;
+        }
+        return this.nextFirstOffset + (selectedIndexDiff - 1) * this.nextSecondOffset;
       }
     }
 

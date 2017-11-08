@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+  <link rel="import" href="../bower_components/polymer/polymer-element.html">
+  <link rel="import" href="../iron-accordion-pages.html">
+  <link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+  <title>Test iron-accordion-pages</title>
+
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+
+</head>
+
+<body>
+  <test-app>
+
+  </test-app>
+  <dom-module id="test-app">
+    <template>
+      <style>
+        :host {
+          display: block;
+        }
+
+        iron-accordion-pages {
+          /* position: absolute; */
+          margin: 30px;
+          height: 600px;
+
+          background-color: lightblue;
+          /* overflow: hidden; */
+          --iron-accordion-pages-transition: 0.3s ease-out;
+        }
+
+        /* Debug */
+
+        .item {
+          border: 1px solid black;
+          width: 150px;
+        }
+
+        #item2 {
+          width: 300px;
+        }
+
+        #item3 {
+          width: 400px;
+        }
+      </style>
+      <h1>Test iron-accordion-pages</h1>
+
+      <paper-button on-tap="_handleSelectPreviousButtonTap">PREVIOUS</paper-button>
+      <paper-button on-tap="_handleSelectNextButtonTap">NEXT</paper-button>
+      <paper-button on-tap="_handleSelectItem0ButtonTap">SELECT 0</paper-button>
+      <paper-button on-tap="_handleSelectItem1ButtonTap">SELECT 1</paper-button>
+      <paper-button on-tap="_handleSelectItem2ButtonTap">SELECT 2</paper-button>
+      <iron-accordion-pages id="accordion" selectable=".item" attr-for-selected="id" selected="{{selected}}">
+        <div id="item1" class="item" slot="items">
+          Item 1
+        </div>
+        <div id="item2" class="item" slot="items">
+          Item 2
+        </div>
+        <div id="item3" class="item" slot="items">
+          Item 3
+        </div>
+      </iron-accordion-pages>
+      Selected = [[selected]]
+      <br>
+    </template>
+
+    <script>
+      /**
+       * @customElement
+       * @polymer
+       */
+      class TestApp extends Polymer.Element {
+        static get is() { return 'test-app'; }
+        static get properties() {
+          return {
+          };
+        }
+        _handleSelectPreviousButtonTap() {
+          this.$.accordion.selectPrevious();
+        }
+        _handleSelectNextButtonTap() {
+          this.$.accordion.selectNext();
+        }
+        _handleSelectItem0ButtonTap() {
+          this.$.accordion.selectIndex(0);
+        }
+        _handleSelectItem1ButtonTap() {
+          this.$.accordion.selectIndex(1);
+        }
+        _handleSelectItem2ButtonTap() {
+          this.$.accordion.selectIndex(2);
+        }
+      }
+
+      window.customElements.define(TestApp.is, TestApp);
+    </script>
+  </dom-module>
+
+</body>
+
+</html>
