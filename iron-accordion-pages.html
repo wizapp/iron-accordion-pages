@@ -1,7 +1,7 @@
 <!-- <link rel="import" href="../polymer/polymer-element.html"> -->
-<link rel="import" href="bower_components/polymer/polymer.html">
-<link rel="import" href="bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
-<link rel="import" href="bower_components/iron-selector/iron-selectable.html">
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../iron-selector/iron-selectable.html">
 
 <dom-module id="iron-accordion-pages">
   <template>
@@ -17,7 +17,7 @@
         height: 100%;
       }
 
-      .container ::slotted([slot=items]) {
+      .container ::slotted(*) {
         position: absolute;
 
         height: 100%;
@@ -31,7 +31,7 @@
       }
     </style>
     <div class="container">
-      <slot name="items"></slot>
+      <slot></slot>
     </div>
 
   </template>
@@ -65,6 +65,10 @@
             value: 100,
             notify: true,
           },
+          loop: {
+            type: Boolean,
+            value: false,
+          }
         };
       }
       static get observers() {
@@ -73,6 +77,38 @@
           '_handleSelectedChanged(selected)',
           '_handleLayoutPropertiesChange(leftInterItemOffset,leftOffset,rightOffset,rightInterItemOffset)'
         ];
+      }
+      selectPrevious() {
+        if (this.loop) {
+          super.selectPrevious();
+          return;
+        }
+        if (!this.items || this.items.length === 0) {
+          return;
+        }
+        if (!this.selected) {
+          return;
+        }
+        if (Number(this._valueToIndex(this.selected) == 0)) {
+          return;
+        }
+        super.selectPrevious();
+      }
+      selectNext() {
+        if (this.loop) {
+          super.selectNext();
+          return;
+        }
+        if (!this.items || this.items.length === 0) {
+          return;
+        }
+        if (!this.selected) {
+          return;
+        }
+        if (Number(this._valueToIndex(this.selected) >= (this.items.length) - 1)) {
+          return;
+        }
+        super.selectNext();
       }
       _handleSelectedChanged(selected) {
         this.layoutItems(true);
@@ -106,6 +142,7 @@
           const itemLeft = this._getItemLeft(i, selectedItemIndex);
           console.log(`Selected: ${selectedItemIndex} - Item ${i}: Left = ${itemLeft} (${this._calcPercentage(itemLeft / this.offsetWidth)})`);
           this._animateElementSetStyle(item, itemLeft);
+          item.style.zIndex = i - selectedItemIndex + 0; // +1 as z-index = 1 is the default
 
           if (!animated) {
             item.style.transition = '';
