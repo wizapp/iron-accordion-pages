@@ -1,7 +1,11 @@
 {
   "name": "iron-accordion-pages",
+  "version": "0.1.0",
+  "license": "WizApp",
   "description": "Multi pages presentation element",
   "main": "iron-accordion-pages.html",
+  "private": true,
+  "authors": ["Sebastien Royer <sroyer@wizapp.fr>"],
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
     "paper-button": "PolymerElements/paper-button#^2.0.0",
