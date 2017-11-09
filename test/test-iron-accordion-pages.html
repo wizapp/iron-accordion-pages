@@ -6,8 +6,10 @@
   <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
   <link rel="import" href="../bower_components/polymer/polymer-element.html">
+  <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
   <link rel="import" href="../iron-accordion-pages.html">
   <link rel="import" href="../bower_components/paper-button/paper-button.html">
+  <link rel="import" href="../bower_components/paper-input/paper-input.html">
 
   <title>Test iron-accordion-pages</title>
 
@@ -21,34 +23,43 @@
   </test-app>
   <dom-module id="test-app">
     <template>
-      <style>
+      <style include="iron-flex iron-flex-alignment">
         :host {
           display: block;
         }
 
-        iron-accordion-pages {
-          /* position: absolute; */
+        .container {
+          background-color: lightblue;
           margin: 30px;
           height: 600px;
+        }
 
-          background-color: lightblue;
+        iron-accordion-pages {
+          background-color: red;
+          /* position: absolute; */
           /* overflow: hidden; */
           --iron-accordion-pages-transition: 0.3s ease-out;
+
+          width: 340px;
         }
 
         /* Debug */
 
         .item {
           border: 1px solid black;
-          width: 150px;
+          width: 100%;
         }
 
         #item2 {
-          width: 300px;
+          width: 100%;
         }
 
         #item3 {
-          width: 400px;
+          width: 100%;
+        }
+
+        .offsets>div:not(:last-of-type) {
+          margin-right: 16px;
         }
       </style>
       <h1>Test iron-accordion-pages</h1>
@@ -58,18 +69,38 @@
       <paper-button on-tap="_handleSelectItem0ButtonTap">SELECT 0</paper-button>
       <paper-button on-tap="_handleSelectItem1ButtonTap">SELECT 1</paper-button>
       <paper-button on-tap="_handleSelectItem2ButtonTap">SELECT 2</paper-button>
-      <iron-accordion-pages id="accordion" selectable=".item" attr-for-selected="id" selected="{{selected}}">
-        <div id="item1" class="item" slot="items">
-          Item 1
+      <br>
+      <paper-button on-tap="_handleSetSize1ButtonTap">SIZE 1</paper-button>
+      <paper-button on-tap="_handleSetSize2ButtonTap">SIZE 2</paper-button>
+      <div class="offsets layout horizontal">
+        <div class="layout vertical">
+          <paper-input label="Left inter item offset" value="{{leftInterItemOffset}}"></paper-input>
+          <paper-input label="Left offset" value="{{leftOffset}}"></paper-input>
         </div>
-        <div id="item2" class="item" slot="items">
-          Item 2
+        <div class="layout vertical">
+          <paper-input label="Right offset" value="{{rightOffset}}"></paper-input>
+          <paper-input label="Right inter item offset" value="{{rightInterItemOffset}}"></paper-input>
         </div>
-        <div id="item3" class="item" slot="items">
-          Item 3
-        </div>
-      </iron-accordion-pages>
+      </div>
+
+      <paper-button on-tap="_handleSwitchLeftOffsetButtonTap">Switch Left Offset</paper-button>
+      <div class="container layout vertical center">
+        <iron-accordion-pages id="accordion" class="flex" selectable=".item" attr-for-selected="id" selected="{{selected}}" left-inter-item-offset="{{leftInterItemOffset}}"
+          left-offset="{{leftOffset}}" right-offset="{{rightOffset}}" right-inter-item-offset="{{rightInterItemOffset}}">
+          <div id="item1" class="item" slot="items">
+            Item 1
+          </div>
+          <div id="item2" class="item" slot="items">
+            Item 2
+          </div>
+          <div id="item3" class="item" slot="items">
+            Item 3
+          </div>
+        </iron-accordion-pages>
+      </div>
+
       Selected = [[selected]]
+      <br> leftOffset = [[leftOffset]]
       <br>
     </template>
 
@@ -98,6 +129,12 @@
         }
         _handleSelectItem2ButtonTap() {
           this.$.accordion.selectIndex(2);
+        }
+        _handleSetSize1ButtonTap() {
+          this.$.accordion.style.width = '200px';
+        }
+        _handleSetSize2ButtonTap() {
+          this.$.accordion.style.width = '400px';
         }
       }
 

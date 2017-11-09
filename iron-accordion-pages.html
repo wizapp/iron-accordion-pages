@@ -27,6 +27,7 @@
         -ms-transition: var(--iron-accordion-pages-transition);
         -o-transition: var(--iron-accordion-pages-transition);
         transition: var(--iron-accordion-pages-transition);
+        will-change: transform;
       }
     </style>
     <div class="container">
@@ -44,25 +45,25 @@
       static get is() { return 'iron-accordion-pages'; }
       static get properties() {
         return {
-          previousSecondOffset: {
+          leftInterItemOffset: {
             type: Number,
             value: 100,
+            notify: true,
           },
-          previousFirstOffset: {
+          leftOffset: {
             type: Number,
             value: 300,
+            notify: true,
           },
-          nextFirstOffset: {
+          rightOffset: {
             type: Number,
             value: 300,
+            notify: true,
           },
-          nextSecondOffset: {
+          rightInterItemOffset: {
             type: Number,
             value: 100,
-          },
-          selectedOffset: {
-            type: Number,
-            value: 400,
+            notify: true,
           },
         };
       }
@@ -70,7 +71,7 @@
         return [
           '_handleItemsChanged(items)',
           '_handleSelectedChanged(selected)',
-          '_handleLayoutPropertiesChange(previousSecondOffset,previousFirstOffset,nextFirstOffset,nextSecondOffset,selectedOffset)'
+          '_handleLayoutPropertiesChange(leftInterItemOffset,leftOffset,rightOffset,rightInterItemOffset)'
         ];
       }
       _handleSelectedChanged(selected) {
@@ -86,7 +87,8 @@
         }
         this.layoutItems(false);
       }
-      _handleLayoutPropertiesChange(previousSecondOffset, previousFirstOffset, nextFirstOffset, nextSecondOffset, selectedOffset) {
+      _handleLayoutPropertiesChange(leftInterItemOffset, leftOffset, rightOffset, rightInterItemOffset) {
+        console.log("_handleLayoutPropertiesChange");
         this.layoutItems(false);
       }
       layoutItems(animated) {
@@ -101,8 +103,8 @@
           if (!animated) {
             item.style.transition = 'none';
           }
-
           const itemLeft = this._getItemLeft(i, selectedItemIndex);
+          console.log(`Selected: ${selectedItemIndex} - Item ${i}: Left = ${itemLeft} (${this._calcPercentage(itemLeft / this.offsetWidth)})`);
           this._animateElementSetStyle(item, itemLeft);
 
           if (!animated) {
@@ -111,17 +113,16 @@
         }
       }
       _animateElementSetStyle(element, toLeft) {
-        const transform = `translate3d(${toLeft}px, 0, 0)`;
+        const width = this.offsetWidth;
+        let toLeftPercent = this._calcPercentage(toLeft / width);
+        const transform = `translate3d(${toLeftPercent}, 0, 0)`;
         element.style.transform = transform;
         element.style.webkitTransform = transform;
         element.style.MozTransform = transform;
         element.style.msTransform = transform;
         element.style.OTransform = transform;
       }
-      _getItemLeft(itemIndex, selectedItemIndex, itemsCount) {
-        return this.selectedOffset + this._getItemLeftOffset(itemIndex, selectedItemIndex);
-      }
-      _getItemLeftOffset(itemIndex, selectedItemIndex) {
+      _getItemLeftOld(itemIndex, selectedItemIndex) {
         let selectedIndexDiff = itemIndex - selectedItemIndex;
         if (selectedIndexDiff === 0) {
           return 0;
@@ -132,6 +133,28 @@
           return -offset;
         }
         return this.nextFirstOffset + (selectedIndexDiff - 1) * this.nextSecondOffset;
+      }
+      _getItemLeft(itemIndex, selectedItemIndex) {
+        const width = this.offsetWidth;
+        if (!width) {
+          console.error("_getItemLeft: Element has no width !");
+          return;
+        }
+
+        let selectedIndexDiff = itemIndex - selectedItemIndex;
+        if (selectedIndexDiff === 0) {
+          return 0;
+        }
+        if (selectedIndexDiff < 0) {
+          selectedIndexDiff = -selectedIndexDiff;
+          const offset = width + Number(this.leftOffset) + (selectedIndexDiff - 1) * Number(this.leftInterItemOffset);
+          return -offset;
+        }
+        return width + Number(this.rightOffset) + (selectedIndexDiff - 1) * Number(this.rightInterItemOffset);
+      }
+      _calcPercentage(value) {
+        value = value.toFixed(2);
+        return `${value * 100}%`;
       }
     }
 
