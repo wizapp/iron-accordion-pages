@@ -45,29 +45,52 @@
       static get is() { return 'iron-accordion-pages'; }
       static get properties() {
         return {
+          /**
+          * Number of pixels between to pages on the 'previous' side of the accordion
+          */
           leftInterItemOffset: {
             type: Number,
             value: 100,
             notify: true,
           },
+          /**
+          * Number of pixels between the selected page and the previous on the 'previous' side of the accordion
+          */
           leftOffset: {
             type: Number,
             value: 300,
             notify: true,
           },
+          /**
+          * Number of pixels between the selected page and the next on the 'next' side of the accordion
+          */
           rightOffset: {
             type: Number,
             value: 300,
             notify: true,
           },
+          /**
+          * Number of pixels between to pages on the 'next' side of the accordion
+          */
           rightInterItemOffset: {
             type: Number,
             value: 100,
             notify: true,
           },
+          /**
+          * Enables loop mode
+          */
           loop: {
             type: Boolean,
             value: false,
+          },
+          /**
+          * Width (pixels) of area where images are lazily loaded (this area contains also the selected page area)
+          * Lazy loading consist in setting 'src' attribute with 'data-src' attributes content.
+          * If undefined (default), no lazy load is done. All images - if any - are immediately loaded.
+          */
+          lazyLoadAreaWidth: {
+            type: Number,
           }
         };
       }
@@ -114,6 +137,12 @@
         this.layoutItems(true);
       }
       _handleItemsChanged(items) {
+        if (!this.lazyLoadAreaWidth) {
+          // Load all contents
+          for (var i = 0, item; item = items[i]; i++) {
+            this._loadContent(item);
+          }
+        }
         if (!this.selected) {
           if (items.length > 0) {
             this.selectIndex(0);
@@ -121,10 +150,10 @@
           }
           return;
         }
+
         this.layoutItems(false);
       }
-      _handleLayoutPropertiesChange(leftInterItemOffset, leftOffset, rightOffset, rightInterItemOffset) {
-        console.log("_handleLayoutPropertiesChange");
+      _handleLayoutPropertiesChange(leftInterItemOffset, leftOffset, rightOffset, rightInterItemOffset, lazyLoadAreaWidth) {
         this.layoutItems(false);
       }
       layoutItems(animated) {
@@ -135,6 +164,7 @@
 
         let selectedItemIndex = this._valueToIndex(selectedItem);
         const items = this.items;
+        const lazyLoadAreaLeftBound = (this.lazyLoadAreaWidth + this.offsetWidth) / 2;
         for (var i = 0, item; item = this.items[i]; i++) {
           if (!animated) {
             item.style.transition = 'none';
@@ -144,11 +174,27 @@
           this._animateElementSetStyle(item, itemLeft);
           item.style.zIndex = i - selectedItemIndex + 0; // +1 as z-index = 1 is the default
 
+          if (this.lazyLoadAreaWidth) {
+            if ((itemLeft >= -lazyLoadAreaLeftBound) && (itemLeft < lazyLoadAreaLeftBound)) {
+              this._loadContent(item);
+            }
+          }
+
           if (!animated) {
             item.style.transition = '';
           }
         }
       }
+      _loadContent(item) {
+        const content = item.querySelectorAll('[data-src]');
+        if (content.length <= 0) return;
+        let i = 0;
+        for (i; i < content.length; ++i) {
+          content[i].src = content[i].getAttribute('data-src');
+          content[i].removeAttribute('data-src');
+        }
+      }
+
       _animateElementSetStyle(element, toLeft) {
         const width = this.offsetWidth;
         let toLeftPercent = this._calcPercentage(toLeft / width);

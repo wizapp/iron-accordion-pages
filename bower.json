@@ -1,6 +1,6 @@
 {
   "name": "iron-accordion-pages",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "WizApp",
   "description": "Multi pages presentation element",
   "main": "iron-accordion-pages.html",
@@ -16,7 +16,8 @@
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",
-    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0"
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
+    "iron-image": "^2.1.2"
   },
   "resolutions": {
     "polymer": "^2.0.0"

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+  <link rel="import" href="../../polymer/polymer-element.html">
+  <link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
+  <link rel="import" href="../iron-accordion-pages.html">
+  <link rel="import" href="../../paper-button/paper-button.html">
+  <link rel="import" href="../../iron-image/iron-image.html">
+
+  <title>Test iron-accordion-pages Lazy loading</title>
+
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+
+</head>
+
+<body>
+  <test-app>
+
+  </test-app>
+  <dom-module id="test-app">
+    <template>
+      <style include="iron-flex iron-flex-alignment">
+        :host {
+          display: block;
+        }
+
+        .container {
+          background-color: rgba(255, 255, 0, 0.3);
+          margin: 30px;
+          height: 600px;
+        }
+
+        iron-accordion-pages {
+          background-color: red;
+          /* position: absolute; */
+          /* overflow: hidden; */
+          --iron-accordion-pages-transition: 0.3s ease-out;
+
+          width: 600px;
+        }
+
+        /* Debug */
+
+        .item {
+          border: 1px solid black;
+          width: 100%;
+        }
+
+        iron-image {
+          width: 600px;
+          height: 700px;
+          --iron-image-placeholder: {
+            background-color: lightgrey;
+          }
+        }
+      </style>
+      <h1>Test iron-accordion-pages</h1>
+
+      <paper-button on-tap="_handleLoadItemsButtonTap">LOAD ITEMS</paper-button>
+      <paper-button on-tap="_handleSelectPreviousButtonTap">PREVIOUS</paper-button>
+      <paper-button on-tap="_handleSelectNextButtonTap">NEXT</paper-button>
+      <paper-button on-tap="_handleSelectItem0ButtonTap">SELECT 0</paper-button>
+      <paper-button on-tap="_handleSelectItem1ButtonTap">SELECT 1</paper-button>
+      <paper-button on-tap="_handleSelectItem2ButtonTap">SELECT 2</paper-button>
+      <paper-button on-tap="_handleSelectLastItemButtonTap">SELECT LAST</paper-button>
+      <br>
+
+      <div class="container layout vertical center">
+        <iron-accordion-pages id="accordion" class="flex" selectable=".item" attr-for-selected="id" left-inter-item-offset="300"
+          left-offset="200" right-offset="300" right-inter-item-offset="400" lazy-load-area-width="2800">
+          <template is="dom-repeat" items="[[images]]" as="image">
+            <div id="[[image.id]]" class="item">
+              <iron-image data-src$="[[image.url]]" preload fade sizing="cover"></iron-image>
+            </div>
+          </template>
+
+        </iron-accordion-pages>
+      </div>
+    </template>
+    <script>
+      /**
+       * @customElement
+       * @polymer
+       */
+      class TestApp extends Polymer.Element {
+        static get is() { return 'test-app'; }
+        static get properties() {
+          return {
+            images: {
+              type: Array,
+            }
+          };
+        }
+        _handleLoadItemsButtonTap() {
+          const urls = [
+            'http://www.hd-wallpaper.images-fonds.com/modules/mg3/albums/Paysages_(landscapes)_Wallpaper_HD/Paysages/Paysage_(landscape)_wallpaper_HD_0031.jpg',
+            'https://images4.alphacoders.com/201/201534.jpg',
+            'http://s1.1zoom.me/b4335/478/Canada_Parks_Mountains_Lake_Forests_Scenery_514472_2560x1440.jpg',
+            'https://images5.alphacoders.com/432/432951.jpg',
+            'http://s1.1zoom.me/b5050/835/407088-svetik_2560x1440.jpg',
+            'http://s1.1zoom.me/b5050/986/USA_Mountains_Lake_454271_2560x1440.jpg',
+          ];
+          let images = [];
+          for (var i = 0; i < urls.length; i++) {
+            const image = { id: `item_${i}`, url: urls[i] };
+            images.push(image);
+          }
+          this.images = images;
+
+        }
+        _handleSelectPreviousButtonTap() {
+          this.$.accordion.selectPrevious();
+        }
+        _handleSelectNextButtonTap() {
+          this.$.accordion.selectNext();
+        }
+        _handleSelectItem0ButtonTap() {
+          this.$.accordion.selectIndex(0);
+        }
+        _handleSelectItem1ButtonTap() {
+          this.$.accordion.selectIndex(1);
+        }
+        _handleSelectItem2ButtonTap() {
+          this.$.accordion.selectIndex(2);
+        }
+        _handleSelectLastItemButtonTap() {
+          const itemsCount = this.$.accordion.items.length;
+          if (itemsCount === 0) {
+            return;
+          }
+          this.$.accordion.selectIndex(itemsCount - 1);
+        }
+      }
+
+      window.customElements.define(TestApp.is, TestApp);
+    </script>
+  </dom-module>
+
+</body>
+
+</html>
