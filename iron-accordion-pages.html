@@ -140,7 +140,7 @@
             item.style.transition = 'none';
           }
           const itemLeft = this._getItemLeft(i, selectedItemIndex);
-          console.log(`Selected: ${selectedItemIndex} - Item ${i}: Left = ${itemLeft} (${this._calcPercentage(itemLeft / this.offsetWidth)})`);
+          // console.log(`Selected: ${selectedItemIndex} - Item ${i}: Left = ${itemLeft} (${this._calcPercentage(itemLeft / this.offsetWidth)})`);
           this._animateElementSetStyle(item, itemLeft);
           item.style.zIndex = i - selectedItemIndex + 0; // +1 as z-index = 1 is the default
 
