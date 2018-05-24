@@ -91,7 +91,11 @@
           */
           lazyLoadAreaWidth: {
             type: Number,
-          }
+          },
+          selected: {
+            type: String,
+            notify: true,
+          },
         };
       }
       static get observers() {
